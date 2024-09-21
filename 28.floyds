@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 100
+#define INF INT_MAX
+
+// Floyd-Warshall algorithm to find shortest distances between every pair of vertices
+void floydWarshall(int graph[MAX][MAX], int n) {
+    int dist[MAX][MAX];  
+
+    // Initialize the distance matrix with the given graph matrix
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                dist[i][j] = 0;  // Distance from a vertex to itself is 0
+            } else if (graph[i][j] != 0) {
+                dist[i][j] = graph[i][j];  // Use the direct edge weight if present
+            } else {
+                dist[i][j] = INF;  // No direct edge, set to infinity
+            }
+        }
+    }
+
+    // Apply Floyd-Warshall algorithm
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                // If vertex k is on the shortest path from i to j, update dist[i][j]
+                if (dist[i][k] != INF && dist[k][j] != INF && dist[i][j] > dist[i][k] + dist[k][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    // Print the resulting shortest distances between every pair of vertices
+    printf("Shortest distances between every pair of vertices:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (dist[i][j] == INF) {
+                printf("INF\t");  // If distance is infinity, print "INF"
+            } else {
+                printf("%d\t", dist[i][j]);  // Otherwise, print the distance
+            }
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int n;
+    printf("(192210065)Enter the number of vertices: ");
+    scanf("%d", &n);
+
+    int graph[MAX][MAX];
+    printf("Enter the adjacency matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+            // We assume 0 means no edge between different vertices, except the diagonal
+            if (i != j && graph[i][j] == 0) {
+                graph[i][j] = INF;  // No edge, set to infinity
+            }
+        }
+    }
+
+    // Run Floyd-Warshall algorithm
+    floydWarshall(graph, n);
+
+    return 0;
+}
